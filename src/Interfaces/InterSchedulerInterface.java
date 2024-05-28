@@ -1,6 +1,7 @@
 package Interfaces;
+import classes.VirtualProcess;
 
 public interface InterSchedulerInterface {
-    void addProcess(Process bcp);
+    void addProcess(VirtualProcess bcp);
     int getProcessLoad();
 }
