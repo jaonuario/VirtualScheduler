@@ -1,7 +1,7 @@
 class SchedulerSimulator{
-    UserInterface ui;
-    LongTermScheduler lts;
-    ShortTermScherduler sts;
+    private UserInterface ui;
+    private LongTermScheduler lts;
+    private ShortTermScherduler sts;
 
     public SchedulerSimulator(){
         
