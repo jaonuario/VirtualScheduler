@@ -6,12 +6,14 @@ public class VirtualProcess {
     public static final short READY = 0;
     public static final short EXEC = 1;
     public static final short BLOCK = 2;
+    public static final short INTERRUPTED = 3;
 
     private String name;
     private Integer[] seqc;
     private long birth;
     private int status;
     private int counter;
+    private int iOblock;
 
     public VirtualProcess(String name, Integer[] seqc){
         this.name = name;
@@ -46,6 +48,7 @@ public class VirtualProcess {
 
     private void block(int value){
         burst();
+        iOblock = value;
         this.status = BLOCK;
     }
 
@@ -71,5 +74,9 @@ public class VirtualProcess {
         do {
             current = System.currentTimeMillis();
         } while ((current - start) < BURST_VALUE);
+    }
+
+    public void launchIO(){
+        this.iOblock--;
     }
 }
