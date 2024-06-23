@@ -13,12 +13,11 @@ public class ShortTermScheduler implements ControlInterface, InterSchedulerInter
     public static final short EXECUTING = 2;
     public static final short FINALIZED = 3;
 
-    private ArrayList<VirtualProcess> readyQueue;
-    private ArrayList<VirtualProcess> processesCompleted;
-    private ArrayList<VirtualProcess> iOQueue;
-    
-    private VirtualProcess currentProcess;
-    private short status;
+    private ArrayList<VirtualProcess> readyQueue;           //fila de prontos
+    private ArrayList<VirtualProcess> processesCompleted;   //fila de processos finalizados
+    private ArrayList<VirtualProcess> iOQueue;              //fila de processos em I/O
+    private VirtualProcess currentProcess;                  //processo atual em execução
+    private short status;                                   //status do simulador
 
     public ShortTermScheduler(){
         this.readyQueue = new ArrayList<VirtualProcess>();
@@ -67,6 +66,7 @@ public class ShortTermScheduler implements ControlInterface, InterSchedulerInter
         time = System.currentTimeMillis();
         while (true) {
             while (status==EXECUTING){
+                //Ciclo de quantum
                 if((time - System.currentTimeMillis())>=QUANTUM){
                     if(currentProcess != null){
                         interruptProcess();
@@ -96,12 +96,12 @@ public class ShortTermScheduler implements ControlInterface, InterSchedulerInter
         }
     }
     
-    private VirtualProcess getNextProcess(){
-        return readyQueue.remove(0);
-    }
-    
     public short getStatus(){
         return this.status;
+    }
+
+    private VirtualProcess getNextProcess(){
+        return readyQueue.remove(0);
     }
     
     private void interruptProcess(){
@@ -122,6 +122,7 @@ public class ShortTermScheduler implements ControlInterface, InterSchedulerInter
             currentProcess = null;
         }
     }
+
     private boolean launchProcess(){
         currentProcess = getNextProcess();
         if(currentProcess == null){
@@ -130,9 +131,13 @@ public class ShortTermScheduler implements ControlInterface, InterSchedulerInter
         }
         return true;
     }
+
     private void IOactivities(){
         for(int i=0; i < iOQueue.size(); i++){
             iOQueue.get(i).launchIO();
+            if(iOQueue.get(i).getIOBlock() == 0){
+                addProcess(iOQueue.remove(i));
+            }
         }
     }
 }

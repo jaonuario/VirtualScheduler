@@ -8,13 +8,13 @@ public class VirtualProcess {
     public static final short BLOCK = 2;
     public static final short INTERRUPTED = 3;
 
-    private String name;
-    private Integer[] seqc;
-    private long birth;
-    private int status;
-    private int counter;
-    private int iOblock;
-
+    private String name;    // nome do processo
+    private Integer[] seqc; // sequencia de commandos
+    private long birth;     // instante que o processo nasceu (milisegundos)
+    private int status;     // status do processo
+    private int counter;    // contador de programa
+    private int iOblock;    // contador de IOs
+    
     public VirtualProcess(String name, Integer[] seqc){
         this.name = name;
         this.seqc = seqc;
@@ -22,26 +22,23 @@ public class VirtualProcess {
         this.counter = 0;
         this.status = READY;
     }
-
-    public int run(){
-        while (hasNextCommand()) {
-            nextCommand();
-        }
-        return status;
-    }
-
+    
     public long getAge(){
         return System.currentTimeMillis() - birth;
     }
-
+    
     public String getName(){
         return name;
     }
-
+    
     public int getStatus(){
         return this.status;
     }
     
+    public int getIOBlock(){
+        return this.iOblock;
+    }
+
     private void execute(){
         burst();
     }
@@ -76,7 +73,9 @@ public class VirtualProcess {
         } while ((current - start) < BURST_VALUE);
     }
 
+    // consome um IO
     public void launchIO(){
         this.iOblock--;
     }
+
 }
