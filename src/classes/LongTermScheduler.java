@@ -8,15 +8,15 @@ import java.util.Scanner;
 import Interfaces.SubmissionInterface;
 
 public class LongTermScheduler implements SubmissionInterface{
-    private ArrayList<VirtualProcess> queuProcess;
+    private ArrayList<VirtualProcess> queueProcess;
 
     public LongTermScheduler(){
-        queuProcess = new ArrayList<VirtualProcess>();
+        queueProcess = new ArrayList<VirtualProcess>();
     }
 
     public boolean submitJob(String fileName){
         VirtualProcess process = createProcess(fileName);
-        
+        queueProcess.add(process);
         
         //add process in queue
 
@@ -35,6 +35,12 @@ public class LongTermScheduler implements SubmissionInterface{
         if(reader == null){
             return null;
         }
+
+        String processName = reader.next();
+        if(!processName.endsWith(".txt")){
+            reader.close();
+            return null;
+        } 
 
         instructionsSequence = getInstructionsSequence(reader);
         if(instructionsSequence == null){
@@ -70,6 +76,13 @@ public class LongTermScheduler implements SubmissionInterface{
         }
 
         String token = reader.next();
+        if(!token.endsWith(".txt")){
+            reader.close();
+            return null;
+        }
+        
+
+        reader.next();
         if(!token.equals("begin")){
             reader.close();
             return null;
