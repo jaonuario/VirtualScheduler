@@ -5,7 +5,11 @@ import java.util.ArrayList;
 import Interfaces.ControlInterface;
 import Interfaces.InterSchedulerInterface;
 
+/** Classe para implementar o escalonador de processos de curto prazo. Classe responsável por gerenciar a execução de processos prontos, suspensos e retormar a simulação
+ * @author
+ */
 public class ShortTermScheduler implements ControlInterface, InterSchedulerInterface, Runnable{
+    //Constantes
     public static final long QUANTUM = 100;
     public static final short EXECUTION_ERROR = -1;
     public static final short SUSPENDED = 0;
@@ -19,24 +23,37 @@ public class ShortTermScheduler implements ControlInterface, InterSchedulerInter
     private VirtualProcess currentProcess;                  //processo atual em execução
     private short status;                                   //status do simulador
 
+
+    /** Construtor da classe ShortTermScheduler
+     * 
+     */
     public ShortTermScheduler(){
         this.readyQueue = new ArrayList<VirtualProcess>();
         this.currentProcess = null;
     }
 
+    /** Método para adicionar um processo à fila de prontos
+     * @param bcp VirtualProcess -  Bloco de Controle do Processo
+     * @return
+     */
     public void addProcess(VirtualProcess bcp){
-        readyQueue.add(bcp);
+        readyQueue.add(bcp);                                //altera o estado do bcp
         return;
     }
 
+    /** Método para obter a quantidade de processos que estão na fila de prontos
+     * @return int - Retorna o número de elementos que estão na lista fila de prontos
+     */
     public int getProcessLoad(){
         return readyQueue.size();
     }
 
+    /** Método para iniciar a simulação */
     public void startSimulation(){
         this.status = EXECUTING;
     }
 
+    /** Método para suspender a simulação */
     public void suspendSimulation(){
         try {
             status=SUSPENDING;
@@ -47,19 +64,25 @@ public class ShortTermScheduler implements ControlInterface, InterSchedulerInter
         }
     }
 
+    /** Método para retomar a simulação */
     public void resumeSimulation(){
         status = EXECUTING;
         this.notify();
     }
 
+    /** Método para interromper a interromper a simulação */
     public void stopSimulation(){
         this.status = FINALIZED;
     } 
 
+    /** Método para mostrar a fila de processos */
     public void displayProcessQueues(){
          
     }
 
+    /** Método para controlar ativamente o fluxo de execução dos processos
+     * 
+     */
     public void run(){
         long time;
 
@@ -96,19 +119,29 @@ public class ShortTermScheduler implements ControlInterface, InterSchedulerInter
         }
     }
     
+    /** Método para obter o status da simulação
+     * 
+     * @return Short - Retorna o status da simulação
+     */
     public short getStatus(){
         return this.status;
     }
 
+    /** Método para obter e remover o próximo processo da fila de prontos
+     * 
+     * @return VirtualProcess - Retorna um objeto do tipo VirtualProcess depois de remover o primeiro elemento da lista 
+     */
     private VirtualProcess getNextProcess(){
         return readyQueue.remove(0);
     }
     
+    /** Método para interromper um processo em execução e colocá-lo de volta na fila de prontos */
     private void interruptProcess(){
         readyQueue.add(currentProcess);
         this.currentProcess = null;
     }
     
+    /** Método para executar os comandos do processo atual */
     private void runCommandsFromCurrentProcess(){
         if(currentProcess.hasNextCommand()){
             currentProcess.nextCommand();
@@ -123,6 +156,10 @@ public class ShortTermScheduler implements ControlInterface, InterSchedulerInter
         }
     }
 
+    /** Método para iniciar a execução do próximo processo na fila de prontos
+     * 
+     * @return Boolean - Se um processo foi atribuído com sucesso, retorna true. Caso contrário, retorna false
+     */
     private boolean launchProcess(){
         currentProcess = getNextProcess();
         if(currentProcess == null){
@@ -132,6 +169,7 @@ public class ShortTermScheduler implements ControlInterface, InterSchedulerInter
         return true;
     }
 
+    /** Método para controlar as atividades de entrada e saída (I/O) dos processos que estão na fila */
     private void IOactivities(){
         for(int i=0; i < iOQueue.size(); i++){
             iOQueue.get(i).launchIO();
@@ -139,5 +177,10 @@ public class ShortTermScheduler implements ControlInterface, InterSchedulerInter
                 addProcess(iOQueue.remove(i));
             }
         }
+    }
+
+    public int getCompletedProcesses() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getCompletedProcesses'");
     }
 }
